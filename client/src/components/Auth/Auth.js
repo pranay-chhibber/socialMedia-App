@@ -15,7 +15,7 @@ import Icon from "./icon";
 import {gapi} from 'gapi-script'
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import {signIn, signUp} from '../../actions/auth'
+import {signin, signup} from '../../actions/auth'
 
 
 const Auth = () => {
@@ -47,10 +47,10 @@ const Auth = () => {
     e.preventDefault();
     
     if(isSignUp){
-        dispatch(signUp(formData,history))
+        dispatch(signup(formData,history))
       }
       else{
-      dispatch(signIn(formData,history))
+      dispatch(signin(formData,history))
 
     }
   };
@@ -62,7 +62,7 @@ const Auth = () => {
   const handleShowPassword = () => setShowPassword((prevShowPassword)=> !prevShowPassword);
   const switchMode = () => {
     setIsSignUp((prevIsSignUp) => !prevIsSignUp)
-    handleShowPassword(false)
+    setShowPassword(false)
   };
   const googleSuccess = async (res) => {
     const result = res?.profileObj;
