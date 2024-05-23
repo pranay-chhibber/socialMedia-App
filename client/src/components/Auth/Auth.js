@@ -14,34 +14,66 @@ import Input from './Input';
 import Icon from "./icon";
 import {gapi} from 'gapi-script'
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import {signIn, signUp} from '../../actions/auth'
+
+
 const Auth = () => {
+    const initialState = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+
+    }
 
     const [showPassword, setShowPassword] = useState(false)
     const [isSignUp, setIsSignUp] = useState(false)
+    const [formData, setFormData] = useState(initialState) 
+    const classes = useStyles();
+      const dispatch = useDispatch()
+    const history = useHistory()
+    
+
   const clientId = "523770669550-qtgui73jf0ko6ugfj9e3kt1bu6vrtiqv.apps.googleusercontent.com"
+
   useEffect(() => {
     gapi.load("client:auth2", () =>{
       gapi.auth2.init({clientId:clientId})
     })
   }, [])
-  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if(isSignUp){
+        dispatch(signUp(formData,history))
+      }
+      else{
+      dispatch(signIn(formData,history))
 
-  const classes = useStyles();
-  const dispatch = useDispatch()
-  const handleSubmit = () => {};
-  const handleChange = () => {};
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({...formData , [e.target.name] : e.target.value})
+  };
+
   const handleShowPassword = () => setShowPassword((prevShowPassword)=> !prevShowPassword);
   const switchMode = () => {
     setIsSignUp((prevIsSignUp) => !prevIsSignUp)
     handleShowPassword(false)
   };
   const googleSuccess = async (res) => {
-
     const result = res?.profileObj;
     const  token = res?.tokenId
-
     try {
+
+      
       dispatch({type : 'AUTH' , data: {result, token}})
+
+      history.push('./')
+
     } catch (error) {
       console.log(error);
     }
@@ -67,7 +99,7 @@ const Auth = () => {
             {isSignUp && (
               <>
                 <Input
-                  name="firstname"
+                  name="firstName"
                   label="First Name"
                   handleChange={handleChange}
                   autoFocus
@@ -75,7 +107,7 @@ const Auth = () => {
                 /> 
 
                 <Input
-                  name="lastname"
+                  name="lastName"
                   label="Last Name"
                   handleChange={handleChange}
                   half
@@ -121,7 +153,6 @@ const Auth = () => {
          onFailure={googleFailure}
          cookiePolicy="single_host_origin"
        />
-
 
           <Grid container justifyContent="flex-end">
                   <Grid item>
