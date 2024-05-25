@@ -33,11 +33,11 @@ const SignUp = () => {
 
   const clientId = "523770669550-qtgui73jf0ko6ugfj9e3kt1bu6vrtiqv.apps.googleusercontent.com"
 
-  // useEffect(() => {
-  //   gapi.load("client:auth2", () =>{
-  //     gapi.auth2.init({clientId:clientId})
-  //   })
-  // }, [])
+  useEffect(() => {
+    gapi.load("client:auth2", () =>{
+      gapi.auth2.init({clientId:clientId})
+    })
+  }, [])
   
   const handleSubmit = (e) => {
     e.preventDefault();
