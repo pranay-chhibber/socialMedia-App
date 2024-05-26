@@ -13,7 +13,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import ChipInput from "material-ui-chip-input";
 import useStyles from "./styles";
 
-import { getPosts } from "../../actions/posts";
+import { getPosts, getPostsBySearch } from "../../actions/posts";
 import Posts from "../Posts/Posts";
 import Form from "../Form/Form";
 import Pagination from "../Pagination";
@@ -33,20 +33,30 @@ const Home = () => {
   const searchQuery = query.get("searchQuery");
   const classes = useStyles();
   const [search, setSearch] = useState('')
-  const [tags, setTags] = useState('')
+  const [tags, setTags] = useState([])
   
-  useEffect(() => {
-    dispatch(getPosts());
-  }, [currentId, dispatch]);
+  // useEffect(() => {
+  //   dispatch(getPosts());
+  // }, [currentId, dispatch]);
 
-    const handleKeyPress = (e) =>{
-      if(e.keyCode === 13){
-        //@ search post
-      } 
+  const searchPost = () => {
+    if (search.trim() || tags) {
+      dispatch(getPostsBySearch({ search, tags: tags.join(',') }));
+      history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`);
+    } else {
+      history.push('/');
     }
-    const handleAdd = (tag) => setTags([...tags,tags])
+  };
+
+  const handleKeyPress = (e) =>{
+    if(e.keyCode === 13){
+      searchPost()      } 
+  }
+
+
+  const handleAddChip = (tag) => setTags([...tags, tag]);
     
-    const handleDelete = (tagToDelete) => setTags(tags.filter((tag)=>tag !== tagToDelete))
+    const handleDelete = (chipToDelete) => setTags(tags.filter((tag) => tag !== chipToDelete));
     
   return (
     <Grow in>
@@ -71,7 +81,7 @@ const Home = () => {
                 name="Search"
                 variant="outlined"
                 label="Search Memories"
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 fullWidth
                 value={search}
                 onChange={(e)=> setSearch(e.target.value)}
@@ -79,15 +89,19 @@ const Home = () => {
               <ChipInput 
               style={{margin: '10px 0'}}
               value={tags}
-              onAdd={handleAdd}
+              onAdd={(chip) => handleAddChip(chip)}
               onDelete={handleDelete}
               label="Search Tags"
               variant='outlined'
               />
+
+              <Button onClick={searchPost} className={classes.searchButton} variant="contained" color="primary">
+              Search
+              </Button>
             </AppBar>
             <Form currentId={currentId} setCurrentId={setCurrentId} />
             <Paper elevation={6}>
-              <Pagination />
+              <Pagination  page={page}/>
             </Paper>
           </Grid>
         </Grid>
