@@ -1,6 +1,21 @@
-import { FETCH_ALL, CREATE, UPDATE, DELETE, LIKE,FETCH_BY_SEARCH ,START_LOADING,END_LOADING } from '../constants/actionTypes';
+import { FETCH_ALL, CREATE, UPDATE, DELETE, LIKE,FETCH_BY_SEARCH ,START_LOADING,END_LOADING , FETCH_POST} from '../constants/actionTypes';
 import * as api from '../api/index.js';
 
+//@single post details
+export const getPost = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: START_LOADING });
+
+    const { data } = await api.fetchPost(id);
+
+    console.log(data);
+    dispatch({ type: FETCH_POST, payload: { post: data } });
+  } catch (error) {
+    console.log(error);
+  }
+  
+};
+//@all posts
 export const getPosts = (page) => async (dispatch) => {
   try {
     dispatch({ type: START_LOADING });
